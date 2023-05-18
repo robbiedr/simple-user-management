@@ -45,6 +45,9 @@ Follow the steps below to get started:
 9. Stop the containers:
    To stop the application and the associated containers, press Ctrl+C in the terminal where you ran the docker-compose up command.
 
+10. API Documentation:
+   The Simple User Management API is documented using Swagger. You can access the API documentation by opening your web browser and navigating to http://localhost:${APP_PORT}/api-docs. The API documentation provides detailed information about the available endpoints, request bodies, responses, and more.
+
 
 >**Note:** It is highly recommended to use Docker for running the application as it provides a consistent and isolated environment. If you choose to run the application without Docker, ensure that you have a compatible PostgreSQL database configured and update the database connection details accordingly.
 
