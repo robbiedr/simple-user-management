@@ -37,9 +37,6 @@ async function registerUser(email, password, firstName, lastName) {
       firstName,
       lastName,
       active: false, // Set the user account as inactive
-    }, {
-      // Exclude the password field from the returned user object
-      attributes: { exclude: ['password'] }
     });
 
     // Generate a token for activation
