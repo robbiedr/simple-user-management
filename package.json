@@ -8,23 +8,28 @@
     "dev": "nodemon app.js",
     "commit": "git-cz",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "migrate": "npx sequelize-cli db:migrate",
+    "rollback": "npx sequelize-cli db:migrate:undo"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/robbiedr/simple-user-management.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "robbievdelrosario@gmail.com",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/robbiedr/simple-user-management/issues"
   },
   "homepage": "https://github.com/robbiedr/simple-user-management#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "pg": "^8.11.0",
     "sequelize": "^6.31.1",
+    "sequelize-cli": "^6.6.0",
     "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {
