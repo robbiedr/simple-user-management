@@ -1,0 +1,38 @@
+{
+  "name": "simple-user-management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "commit": "git-cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robbiedr/simple-user-management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robbiedr/simple-user-management/issues"
+  },
+  "homepage": "https://github.com/robbiedr/simple-user-management#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0",
+    "sequelize": "^6.31.1",
+    "swagger-ui-express": "^4.6.3"
+  },
+  "devDependencies": {
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "nodemon": "^2.0.22"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
