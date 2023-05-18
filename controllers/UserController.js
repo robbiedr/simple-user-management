@@ -147,8 +147,63 @@ async function loginUser(req, res, next) {
   }
 }
 
+/**
+ * @swagger
+ * /api/users/change-password:
+ *   put:
+ *     summary: Change user password
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: P@ssw0rd!
+ *               newPassword:
+ *                 type: string
+ *                 example: n3wP@ssw0rd!
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       403:
+ *         description: Forbidden - Password change not allowed
+ *       400:
+ *         description: Invalid request payload
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * Register a user
+ * @param {object} req Request object
+ * @param {object} res Response object
+ * @param {object} next Next
+ */
+async function changePassword(req, res, next) {
+  const {currentPassword, newPassword} = req.body;
+  const userId = req.user.id; // Assuming you have the user ID available in the request
+
+  let data;
+  try {
+    data = await UserService.changePassword(currentPassword, newPassword, userId);
+    res.json(data);
+  } catch (error) {
+    console.log({error});
+    next(error);
+  }
+}
+
 module.exports = {
   registerUser,
   activateUser,
   loginUser,
+  changePassword,
 };
