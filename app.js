@@ -4,7 +4,7 @@ const port = 3000;
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
+  res.status(200).json({status: 'OK'});
 });
 
 // Start the server

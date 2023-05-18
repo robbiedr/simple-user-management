@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,8 @@
   "devDependencies": {
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.40.0",
+    "eslint-config-google": "^0.14.0",
     "nodemon": "^2.0.22"
   },
   "config": {
