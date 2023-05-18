@@ -98,7 +98,57 @@ async function activateUser(req, res, next) {
   }
 }
 
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: User login
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: example@email.com
+ *               password:
+ *                 type: string
+ *                 example: P@ssw0rd!
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *       401:
+ *         description: Invalid email or password
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * Login a user
+ * @param {object} req Request object
+ * @param {object} res Response object
+ * @param {object} next Next
+ */
+async function loginUser(req, res, next) {
+  const {email, password} = req.body;
+  let data;
+  try {
+    data = await UserService.loginUser(email, password);
+    res.json(data);
+  } catch (error) {
+    console.log({error});
+    next(error);
+  }
+}
+
 module.exports = {
   registerUser,
   activateUser,
+  loginUser,
 };
