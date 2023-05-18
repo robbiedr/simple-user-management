@@ -11,7 +11,8 @@
     "migrate": "npx sequelize-cli db:migrate",
     "rollback": "npx sequelize-cli db:migrate:undo",
     "precommit": "npm run lint",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "docker": "docker-compose build ; docker-compose up"
   },
   "husky": {
     "hooks": {
@@ -39,6 +40,7 @@
     "pg": "^8.11.0",
     "sequelize": "^6.31.1",
     "sequelize-cli": "^6.6.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3",
     "winston": "^3.8.2"
   },
