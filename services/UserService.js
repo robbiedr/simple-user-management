@@ -143,8 +143,45 @@ async function loginUser(email, password) {
   };
 }
 
+/**
+ * Change password
+ * @param {string} currentPassword Current Password
+ * @param {string} newPassword New Password
+ * @param {string} userId User ID
+ */
+async function changePassword(currentPassword, newPassword, userId) {
+  let user;
+  try {
+    // Check if the current password matches the user's password
+    user = await Users.findOne({where: {id: userId}});
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  if (!user || !bcrypt.compareSync(currentPassword, user.password)) {
+    throw createError(401, 'Invalid current password');
+  }
+
+  if (currentPassword === newPassword) {
+    throw createError(400, 'Invalid new password');
+  }
+
+  try {
+    // Update the user's password with the new one
+    user.password = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+    await user.save();
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  return {
+    message: 'Password changed successfully',
+  };
+}
+
 module.exports = {
   registerUser,
   activateUser,
   loginUser,
+  changePassword,
 };
