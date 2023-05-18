@@ -104,7 +104,47 @@ async function activateUser(token) {
   };
 }
 
+/**
+ * Activates a user via token
+ * @param {string} email Email
+ * @param {string} password Password
+ * @return {object} Access token
+ */
+async function loginUser(email, password) {
+  let user;
+  try {
+    // Check if the user exists
+    user = await Users.findOne({where: {email}});
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  if (!user) {
+    throw createError(401, 'Invalid email or password');
+  }
+
+  // Compare the password
+  const isPasswordValid = bcrypt.compareSync(password, user.password);
+  if (!isPasswordValid) {
+    throw createError(401, 'Invalid email or password');
+  }
+
+  if (!user.dataValues.active) {
+    throw createError(401, 'Inactive account');
+  }
+
+  delete user.dataValues.password;
+
+  // Generate a bearer token
+  const accessToken = jwt.sign(user.dataValues, TOKEN_SECRET_KEY, {expiresIn: '1h'});
+
+  return {
+    accessToken,
+  };
+}
+
 module.exports = {
   registerUser,
   activateUser,
+  loginUser,
 };
