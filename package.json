@@ -6,11 +6,17 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "commit": "git-cz",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "migrate": "npx sequelize-cli db:migrate",
-    "rollback": "npx sequelize-cli db:migrate:undo"
+    "rollback": "npx sequelize-cli db:migrate:undo",
+    "precommit": "npm run lint",
+    "commit": "git-cz"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
   },
   "repository": {
     "type": "git",
@@ -37,6 +43,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.40.0",
     "eslint-config-google": "^0.14.0",
+    "husky": "^8.0.3",
     "nodemon": "^2.0.22"
   },
   "config": {
