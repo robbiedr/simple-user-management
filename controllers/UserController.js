@@ -1,4 +1,5 @@
 const UserService = require('../services/UserService');
+const createError = require('http-errors');
 
 /**
  * @swagger
@@ -189,10 +190,14 @@ async function loginUser(req, res, next) {
  */
 async function changePassword(req, res, next) {
   const {currentPassword, newPassword} = req.body;
-  const userId = req.user.id; // Assuming you have the user ID available in the request
+  const userId = req.user?.id; // Assuming you have the user ID available in the request
 
   let data;
   try {
+    if (!userId) {
+      throw createError(401, 'Bearer token missing');
+    }
+
     data = await UserService.changePassword(currentPassword, newPassword, userId);
     res.json(data);
   } catch (error) {
@@ -201,9 +206,58 @@ async function changePassword(req, res, next) {
   }
 }
 
+/**
+ * Get user list or details
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get user list or details
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User list or details retrieved successfully
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * Register a user
+ * @param {object} req Request object
+ * @param {object} res Response object
+ * @param {object} next Next
+ */
+async function getUserListDetails(req, res, next) {
+  const userId = req.user?.id; // Assuming you have the user ID available in the request
+
+  let data;
+
+  if (!userId) {
+    try {
+      data = await UserService.getUserList();
+      res.json(data);
+    } catch (error) {
+      console.log({error});
+      next(error);
+    }
+  } else {
+    try {
+      data = await UserService.getUserDetails(userId);
+      res.json(data);
+    } catch (error) {
+      console.log({error});
+      next(error);
+    }
+  }
+}
+
 module.exports = {
   registerUser,
   activateUser,
   loginUser,
   changePassword,
+  getUserListDetails,
 };

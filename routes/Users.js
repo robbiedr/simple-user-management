@@ -8,5 +8,6 @@ router.post('/register', UserController.registerUser);
 router.get('/activate', UserController.activateUser);
 router.post('/login', UserController.loginUser);
 router.put('/change-password', authenticateToken, UserController.changePassword);
+router.get('/', authenticateToken, UserController.getUserListDetails);
 
 module.exports = router;

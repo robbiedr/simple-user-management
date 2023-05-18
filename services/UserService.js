@@ -74,11 +74,17 @@ async function registerUser(email, password, firstName, lastName) {
  */
 async function activateUser(token) {
   let user;
+  let email;
+
   try {
     // Verify the token and extract the email
     const decodedToken = jwt.verify(token, TOKEN_SECRET_KEY);
-    const {email} = decodedToken;
+    email = decodedToken.email;
+  } catch (TokenError) {
+    throw createError(400, 'Invalid activation token');
+  }
 
+  try {
     // Find the user in the database by email
     user = await Users.findOne({where: {email}});
   } catch (DBError) {
@@ -108,7 +114,7 @@ async function activateUser(token) {
  * Activates a user via token
  * @param {string} email Email
  * @param {string} password Password
- * @return {object} Access token
+ * @return {object} Bearer token
  */
 async function loginUser(email, password) {
   let user;
@@ -136,10 +142,10 @@ async function loginUser(email, password) {
   delete user.dataValues.password;
 
   // Generate a bearer token
-  const accessToken = jwt.sign(user.dataValues, TOKEN_SECRET_KEY, {expiresIn: '1h'});
+  const bearerToken = jwt.sign(user.dataValues, TOKEN_SECRET_KEY, {expiresIn: '1h'});
 
   return {
-    accessToken,
+    bearerToken,
   };
 }
 
@@ -179,9 +185,43 @@ async function changePassword(currentPassword, newPassword, userId) {
   };
 }
 
+/**
+ * Retrieves list of users with limited details
+ * @return {array} Array of users
+ */
+async function getUserList() {
+  let users;
+  try {
+    users = await Users.findAll({attributes: {exclude: ['password', 'email', 'lastName']}});
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  return users;
+}
+
+/**
+ * Retrieves user details
+ * @param {string} userId User ID
+ * @return {object} User object
+ */
+async function getUserDetails(userId) {
+  let user;
+  try {
+    user = await Users.findOne({where: {id: userId}});
+    delete user.dataValues.password;
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  return user;
+}
+
 module.exports = {
   registerUser,
   activateUser,
   loginUser,
   changePassword,
+  getUserList,
+  getUserDetails,
 };
