@@ -1,6 +1,7 @@
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const createError = require('http-errors');
 
 const {
   users: Users,
@@ -20,17 +21,23 @@ const {API_BASE_PATH, TOKEN_SECRET_KEY} = process.env;
  */
 async function registerUser(email, password, firstName, lastName) {
   let newUser;
+  let existingUser;
   try {
     // Check if the email address is already registered
-    const existingUser = await Users.findOne({where: {email}});
-    if (existingUser) {
-      throw new Error('Email address is already registered');
-    }
+    existingUser = await Users.findOne({where: {email}});
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+  if (existingUser) {
+    throw createError(409, 'Email address is already registered');
+  }
 
-    // Create a new user
+  // Hash the password
+  const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+
+  try {
+  // Create a new user
     newUser = await Users.create({
       email,
       password: hashedPassword,
@@ -38,19 +45,18 @@ async function registerUser(email, password, firstName, lastName) {
       lastName,
       active: false, // Set the user account as inactive
     });
-
-    // Generate a token for activation
-    const activationToken = jwt.sign({email}, TOKEN_SECRET_KEY, {expiresIn: '1h'});
-
-    // Compose the email message
-    const activationLink = `${API_BASE_PATH}/users/activate?token=${activationToken}`;
-
-    // Send the activation email
-    await sendActivationEmail(email, activationLink);
-  } catch (error) {
-    console.error('User registration error:', error);
-    throw new Error(error.message);
+  } catch (DBError) {
+    throw new Error(DBError.message);
   }
+
+  // Generate a token for activation
+  const activationToken = jwt.sign({email}, TOKEN_SECRET_KEY, {expiresIn: '1h'});
+
+  // Compose the email message
+  const activationLink = `${API_BASE_PATH}/users/activate?token=${activationToken}`;
+
+  // Send the activation email
+  await sendActivationEmail(email, activationLink);
 
   return newUser;
 }
