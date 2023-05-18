@@ -1,9 +1,14 @@
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const {
   users: Users,
 } = require('../config/db');
+
+const {sendActivationEmail} = require('../utils/emailer');
+
+const {API_BASE_PATH, TOKEN_SECRET_KEY} = process.env;
 
 /**
  * Register a user
@@ -14,12 +19,12 @@ const {
  * @return {object} New user record
  */
 async function registerUser(email, password, firstName, lastName) {
-  let existingUser; let newUser;
+  let newUser;
   try {
     // Check if the email address is already registered
-    existingUser = await Users.findOne({where: {email}});
+    const existingUser = await Users.findOne({where: {email}});
     if (existingUser) {
-      return res.status(409).json({error: 'Email address is already registered'});
+      throw new Error('Email address is already registered');
     }
 
     // Hash the password
@@ -32,9 +37,19 @@ async function registerUser(email, password, firstName, lastName) {
       firstName,
       lastName,
       active: false, // Set the user account as inactive
+    }, {
+      // Exclude the password field from the returned user object
+      attributes: { exclude: ['password'] }
     });
 
-    // TODO: Send activation email to the user's email address with a token
+    // Generate a token for activation
+    const activationToken = jwt.sign({email}, TOKEN_SECRET_KEY, {expiresIn: '1h'});
+
+    // Compose the email message
+    const activationLink = `${API_BASE_PATH}/users/activate?token=${activationToken}`;
+
+    // Send the activation email
+    await sendActivationEmail(email, activationLink);
   } catch (error) {
     console.error('User registration error:', error);
     throw new Error(error.message);
