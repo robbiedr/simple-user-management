@@ -3,7 +3,7 @@ const router = new express.Router();
 
 const UserController = require('../controllers/UserController');
 
-// User Registration Endpoint
 router.post('/register', UserController.registerUser);
+router.get('/activate', UserController.activateUser);
 
 module.exports = router;

@@ -59,6 +59,46 @@ async function registerUser(req, res, next) {
   }
 }
 
+/**
+ * @swagger
+ * /api/users/activate:
+ *   get:
+ *     summary: Activate a user account
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - name: token
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User account activated successfully
+ *       400:
+ *         description: Invalid activation token or user already activated
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * Activate a user
+ * @param {object} req Request object
+ * @param {object} res Response object
+ * @param {object} next Next
+ */
+async function activateUser(req, res, next) {
+  const {token} = req.query;
+  let data;
+  try {
+    data = await UserService.activateUser(token);
+    res.json(data);
+  } catch (error) {
+    console.log({error});
+    next(error);
+  }
+}
+
 module.exports = {
   registerUser,
+  activateUser,
 };

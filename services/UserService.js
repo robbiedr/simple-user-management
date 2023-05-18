@@ -53,14 +53,58 @@ async function registerUser(email, password, firstName, lastName) {
   const activationToken = jwt.sign({email}, TOKEN_SECRET_KEY, {expiresIn: '1h'});
 
   // Compose the email message
-  const activationLink = `${API_BASE_PATH}/users/activate?token=${activationToken}`;
+  const activationLink = `${API_BASE_PATH}/api/users/activate?token=${activationToken}`;
 
   // Send the activation email
   await sendActivationEmail(email, activationLink);
 
-  return newUser;
+  return {
+    message: 'User account registered successfully',
+    id: newUser.id,
+    email: newUser.email,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+    createdAt: newUser.createdAt,
+  };
+}
+
+/**
+ * Activates a user via token
+ * @param {string} token Activation token
+ */
+async function activateUser(token) {
+  let user;
+  try {
+    // Verify the token and extract the email
+    const decodedToken = jwt.verify(token, TOKEN_SECRET_KEY);
+    const {email} = decodedToken;
+
+    // Find the user in the database by email
+    user = await Users.findOne({where: {email}});
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  // If user not found or already activated, return an error
+  if (!user || user.dataValues.active) {
+    throw createError(400, 'Invalid activation token');
+  }
+
+  try {
+    // Update the user's active status to true
+    user.active = true;
+    await user.save();
+  } catch (DBError) {
+    throw new Error(DBError.message);
+  }
+
+  return {
+    message: 'User account activated successfully',
+    email: user.dataValues.email,
+  };
 }
 
 module.exports = {
   registerUser,
+  activateUser,
 };

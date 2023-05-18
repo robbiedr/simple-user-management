@@ -14,7 +14,17 @@ const sendActivationEmail = async (email, activationLink) => {
       from: 'no-reply@email.xyz',
       to: email,
       subject: 'Activate your account',
-      text: `Please click the following link to activate your account: ${activationLink}`,
+      html: `
+        <h1>Welcome!</h1>
+        <p>Thank you for signing up. Please click the button below to activate your account:</p>
+        <p>
+          <a href="${activationLink}" target="_blank" style="display: inline-block;
+          padding: 12px 24px; background-color: #4CAF50; color: #fff; text-decoration: none;">Activate Account</a>
+        </p>
+        <p>If you did not sign up for an account, you can safely ignore this email.</p>
+        <p>Best regards,</p>
+        <p>Your App Team</p>
+      `,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
