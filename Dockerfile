@@ -13,8 +13,11 @@ RUN npm install
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose the desired port
-EXPOSE 3000
+# Set the environment variable for the app port
+ENV APP_PORT=${APP_PORT}
+
+# Expose the app port
+EXPOSE ${APP_PORT}
 
 # Start the application
 CMD [ "npm", "start" ]

@@ -4,15 +4,31 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - APP_PORT=${APP_PORT}
     ports:
-      - '3000:3000'
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       - db
     env_file:
       - .env
+    networks:
+      - mynetwork
   db:
     image: postgres
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - '5432:5432'
+    networks:
+      - mynetwork
+  maildev:
+    image: maildev/maildev
+    ports:
+      - '1025:1025' # SMTP port
+      - '1080:1080' # Web interface port
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
