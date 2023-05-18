@@ -2,12 +2,15 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
-const {APP_PORT} = process.env;
+const {APP_PORT, API_BASE_PATH} = process.env;
 const createError = require('http-errors');
 const logger = require('./utils/logger');
 
 // Import the users route
 const usersRouter = require('./routes/Users');
+
+// Require the swagger.js file
+require('./swagger.js')(app);
 
 app.use(express.json());
 
@@ -31,7 +34,7 @@ app.get('/health', (req, res) => {
 });
 
 // Mount the users route
-app.use('/users', usersRouter);
+app.use('/api/users', usersRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -48,4 +51,5 @@ app.use((err, req, res, next) => {
 // Start the server
 app.listen(APP_PORT, () => {
   logger.info(`Server is running on port ${APP_PORT}`);
+  logger.info(`API Documentation: ${API_BASE_PATH}/api-docs`);
 });
